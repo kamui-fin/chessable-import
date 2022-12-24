@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support import expected_conditions as EC
 import pyperclip as pc
 
 config = dotenv_values(".env")
@@ -63,6 +64,7 @@ def import_pgn(games, book_name, chapter):
     toggle = driver.find_element(By.CSS_SELECTOR, "#toggleImportMethod")
     toggle.click()
     form = driver.find_element(By.CSS_SELECTOR, "#importForm")
+    submit_btn = driver.find_element(By.CSS_SELECTOR, "#submitButton")
     pgn_field = form.find_element(By.CSS_SELECTOR, "#cutAndPastePGN")
     pgn_field.click()
 
@@ -75,7 +77,9 @@ def import_pgn(games, book_name, chapter):
     course_field.select_by_visible_text(book_name)
     chapter_field.select_by_visible_text(chapter)
 
-    form.submit()
+    submit_btn.click()
+
+    WebDriverWait(driver, 20).until(lambda driver: driver.find_element(By.CSS_SELECTOR, "#swal2-title").text.startswith("Import "))
 
 def import_course(book_name, filename):
     pgn = open(filename, encoding="utf-8")
@@ -98,5 +102,5 @@ def import_course(book_name, filename):
     for chapter, games in data.items():
         import_pgn(games, book_name, chapter)
 
-import_course("London System", "game.pgn")
+import_course("London System", "src/game.pgn")
 driver.close()
