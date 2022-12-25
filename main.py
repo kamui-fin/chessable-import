@@ -138,7 +138,6 @@ if __name__ == "__main__":
         die("Must configure .env file with credentials")
 
     driver = webdriver.Firefox()
-    driver.close()
 
     login(username, password)
     print(f"Logged in as {username}")
@@ -146,3 +145,4 @@ if __name__ == "__main__":
 
     import_course(course_name, pgn_file, course_color, course_type)
     print("Successfully imported all chapters")
+    driver.close()
