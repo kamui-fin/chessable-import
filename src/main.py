@@ -88,10 +88,10 @@ def chunks(lst, n):
         res.append(lst[i:i + n])
     return res
 
-def import_course(book_name, filename):
+def import_course(book_name, filename, course_color, course_type):
     pgn = open(filename, encoding="utf-8")
 
-    book_id = new_book(book_name)
+    book_id = new_book(book_name, course_type, course_color)
 
     data = {}
     while chapter := chess.pgn.read_game(pgn):
@@ -125,11 +125,15 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('coursename')
 parser.add_argument('filename')
+parser.add_argument('-c', '--color', choices=["White", "Black"], default="White")
+parser.add_argument('-t', '--type', choices=["Opening", "Strategy", "Endgame", "Tactics"], default="Opening")
 
 args = parser.parse_args()
 
 pgn_file = args.filename
 course_name = args.coursename
+course_color = args.color
+course_type = args.type
 
 if not pathlib.Path(pgn_file).exists():
     die("Must specify a valid pgn file path")
@@ -143,7 +147,7 @@ driver = webdriver.Firefox()
 login(username, password)
 print(f"Logged in as {username}")
 print("Beginning import...")
-import_course(course_name, pgn_file)
+import_course(course_name, pgn_file, course_color, course_type)
 print("Successfully imported all chapters")
 
 driver.close()

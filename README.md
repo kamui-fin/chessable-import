@@ -41,6 +41,11 @@ python src/main.py [course_name] [pgn_file]
 - `[pgn_file]` - A valid path to the input pgn file
 - `[course_name]` - The title for the course that appears in chessable
 
+### Course options customization
+
+- `-c` - The color of the pieces for the course. Defaults to `White`. The other option is `Black`
+- `-t` - Course type. Available options include `["Opening", "Endgame", "Strategy", "Tactics"]`
+
 ## Contributing
 
 All contributions in the form of pull requests, bug reports, etc. are gladly welcomed.
