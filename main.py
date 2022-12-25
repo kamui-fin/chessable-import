@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
-from .src.utils import *
+from src.utils import *
 
 def login(username, password):
     driver.get("https://www.chessable.com/login")
