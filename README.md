@@ -7,7 +7,7 @@ Chessable is a widely used platform that combines SRS with chess concepts. This 
 1. Clone the repository
 
 ```
-git clone git@github.com:kamui-fin/chessable-import.git
+git clone https://github.com/kamui-fin/chessable-import.git
 cd chessable-import
 ```
 
@@ -35,7 +35,7 @@ PASSWORD=my_password
 To run `chessable-import`, the command is simply:
 
 ```
-python src/main.py [course_name] [pgn_file]
+python main.py [course_name] [pgn_file]
 ```
 
 - `[pgn_file]` - A valid path to the input pgn file

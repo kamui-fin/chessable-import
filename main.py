@@ -1,5 +1,4 @@
 import os
-import sys
 import pathlib
 import chess.pgn
 import argparse
@@ -12,11 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
-from pprint import pprint
-
-def die(msg):
-    print(msg, file=sys.stderr)
-    exit(-1)
+from .src.utils import *
 
 def login(username, password):
     driver.get("https://www.chessable.com/login")
@@ -80,18 +75,13 @@ def import_pgn(games, book_name, chapter):
 
     submit_btn.click()
 
-    WebDriverWait(driver, 20).until(lambda driver: driver.find_element(By.CSS_SELECTOR, "#swal2-title").text.startswith("Import "))
-
-def chunks(lst, n):
-    res = []
-    for i in range(0, len(lst), n):
-        res.append(lst[i:i + n])
-    return res
+    WebDriverWait(driver, 30).until(lambda driver: driver.find_element(By.CSS_SELECTOR, "#swal2-title").text.startswith("Import "))
 
 def import_course(book_name, filename, course_color, course_type):
     pgn = open(filename, encoding="utf-8")
 
     book_id = new_book(book_name, course_type, course_color)
+    print(f'Created course "{book_name}" of color {course_color} and type {course_type}')
 
     data = {}
     while chapter := chess.pgn.read_game(pgn):
@@ -105,49 +95,54 @@ def import_course(book_name, filename, course_color, course_type):
         if len(subgames) > 100:
             # chunk chapter into subchapter
             for i, chunk in enumerate(chunks(subgames, 100), start=1):
-                subchapter_name = f"{chapter_name} - Part {i}"
+                marking = f"({i})"
+                subchapter_name = trim_name(f"{chapter_name}{marking}", with_chunk=len(marking))
                 data[subchapter_name] = chunk
+                create_chapter(subchapter_name, book_id)
         else:
+            chapter_name = trim_name(chapter_name)
             data[chapter_name] = subgames
-
-        create_chapter(chapter_name, book_id)
+            create_chapter(chapter_name, book_id)
 
     for chapter, games in data.items():
-        print(f"Imported {len(games)} from {chapter}")
         import_pgn(games, book_name, chapter)
+        print(f"Imported {len(games)} from {chapter}")
 
-load_dotenv()
+def init_app():
+    parser = argparse.ArgumentParser(
+                        prog = 'chessable-import',
+                        description = 'Imports a course from a PGN into chessable accurately',
+                    )
 
-parser = argparse.ArgumentParser(
-                    prog = 'chessable-import',
-                    description = 'Imports a course from a PGN into chessable accurately',
-                )
+    parser.add_argument('coursename')
+    parser.add_argument('filename')
+    parser.add_argument('-c', '--color', choices=["White", "Black"], default="White")
+    parser.add_argument('-t', '--type', choices=["Opening", "Strategy", "Endgame", "Tactics"], default="Opening")
 
-parser.add_argument('coursename')
-parser.add_argument('filename')
-parser.add_argument('-c', '--color', choices=["White", "Black"], default="White")
-parser.add_argument('-t', '--type', choices=["Opening", "Strategy", "Endgame", "Tactics"], default="Opening")
+    args = parser.parse_args()
+    return args
 
-args = parser.parse_args()
+if __name__ == "__main__":
+    load_dotenv()
+    args = init_app()
+    pgn_file = args.filename
+    course_name = args.coursename
+    course_color = args.color
+    course_type = args.type
 
-pgn_file = args.filename
-course_name = args.coursename
-course_color = args.color
-course_type = args.type
+    if not pathlib.Path(pgn_file).exists():
+        die("Must specify a valid pgn file path")
 
-if not pathlib.Path(pgn_file).exists():
-    die("Must specify a valid pgn file path")
+    username, password = os.getenv('USERNAME'), os.getenv('PASSWORD')
+    if not username or not password:
+        die("Must configure .env file with credentials")
 
-username, password = os.getenv('USERNAME'), os.getenv('PASSWORD')
-if not username or not password:
-    die("Must configure .env file with credentials")
+    driver = webdriver.Firefox()
+    driver.close()
 
-driver = webdriver.Firefox()
+    login(username, password)
+    print(f"Logged in as {username}")
+    print("Beginning import...")
 
-login(username, password)
-print(f"Logged in as {username}")
-print("Beginning import...")
-import_course(course_name, pgn_file, course_color, course_type)
-print("Successfully imported all chapters")
-
-driver.close()
+    import_course(course_name, pgn_file, course_color, course_type)
+    print("Successfully imported all chapters")
