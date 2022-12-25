@@ -5,11 +5,9 @@ name = "pypi"
 
 [packages]
 chess = "*"
-requests = "*"
 selenium = "*"
 pyperclip = "*"
 python-dotenv = "*"
-keyring = "*"
 
 [dev-packages]
 
