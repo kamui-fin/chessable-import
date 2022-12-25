@@ -1,20 +1,17 @@
-import argparse
 import os
-import keyring
-from dotenv import load_dotenv
-import getpass
 import sys
 import pathlib
 import chess.pgn
+import argparse
+import pyperclip as pc
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
-import pyperclip as pc
 
 def die(msg):
     print(msg, file=sys.stderr)
@@ -103,11 +100,6 @@ def import_course(book_name, filename):
 
     for chapter, games in data.items():
         import_pgn(games, book_name, chapter)
-
-def get_credentials():
-    username = keyring.get_password(SERVICE_ID, MAGIC_USERNAME_KEY)
-    password = keyring.get_password(SERVICE_ID, username)
-    return (username, password)
 
 load_dotenv()
 
