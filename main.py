@@ -116,7 +116,7 @@ def init_app():
 
     parser.add_argument('coursename')
     parser.add_argument('filename')
-    parser.add_argument('-c', '--color', choices=["White", "Black"], default="White")
+    parser.add_argument('-c', '--color', choices=["White", "Black", "Both"], default="White")
     parser.add_argument('-t', '--type', choices=["Opening", "Strategy", "Endgame", "Tactics"], default="Opening")
 
     args = parser.parse_args()

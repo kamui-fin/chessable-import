@@ -43,7 +43,7 @@ python main.py [course_name] [pgn_file]
 
 ### Course options customization
 
-- `-c` - The color of the pieces for the course. Defaults to `White`. The other option is `Black`
+- `-c` - The color of the pieces for the course. Defaults to `White`. The other options are `Black` and `Both`
 - `-t` - Course type. Available options include `["Opening", "Endgame", "Strategy", "Tactics"]`
 
 ## Contributing
