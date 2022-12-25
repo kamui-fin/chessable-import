@@ -9,6 +9,7 @@ requests = "*"
 selenium = "*"
 pyperclip = "*"
 python-dotenv = "*"
+keyring = "*"
 
 [dev-packages]
 

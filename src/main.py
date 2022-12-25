@@ -1,5 +1,10 @@
-from dotenv import dotenv_values
-import requests
+import argparse
+import os
+import keyring
+from dotenv import load_dotenv
+import getpass
+import sys
+import pathlib
 import chess.pgn
 from urllib.parse import quote_plus
 from selenium import webdriver
@@ -11,11 +16,9 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
 import pyperclip as pc
 
-config = dotenv_values(".env")
-username = config["USERNAME"]
-password = config["PASSWORD"]
-
-driver = webdriver.Firefox()
+def die(msg):
+    print(msg, file=sys.stderr)
+    exit(-1)
 
 def login(username, password):
     driver.get("https://www.chessable.com/login")
@@ -84,7 +87,6 @@ def import_pgn(games, book_name, chapter):
 def import_course(book_name, filename):
     pgn = open(filename, encoding="utf-8")
 
-    login(username, password)
     book_id = new_book(book_name)
 
     data = {}
@@ -102,5 +104,36 @@ def import_course(book_name, filename):
     for chapter, games in data.items():
         import_pgn(games, book_name, chapter)
 
-import_course("London System", "src/game.pgn")
+def get_credentials():
+    username = keyring.get_password(SERVICE_ID, MAGIC_USERNAME_KEY)
+    password = keyring.get_password(SERVICE_ID, username)
+    return (username, password)
+
+load_dotenv()
+
+parser = argparse.ArgumentParser(
+                    prog = 'chessable-import',
+                    description = 'Imports a course from a PGN into chessable accurately',
+                )
+
+parser.add_argument('coursename')
+parser.add_argument('filename')
+
+args = parser.parse_args()
+
+pgn_file = args.filename
+course_name = args.coursename
+
+if not pathlib.Path(pgn_file).exists():
+    die("Must specify a valid pgn file path")
+
+username, password = os.getenv('USERNAME'), os.getenv('PASSWORD')
+if not username or not password:
+    die("Must configure .env file with credentials")
+
+driver = webdriver.Firefox()
+
+login(username, password)
+import_course(course_name, pgn_file)
+
 driver.close()
