@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
+from pprint import pprint
 
 def die(msg):
     print(msg, file=sys.stderr)
@@ -81,6 +82,12 @@ def import_pgn(games, book_name, chapter):
 
     WebDriverWait(driver, 20).until(lambda driver: driver.find_element(By.CSS_SELECTOR, "#swal2-title").text.startswith("Import "))
 
+def chunks(lst, n):
+    res = []
+    for i in range(0, len(lst), n):
+        res.append(lst[i:i + n])
+    return res
+
 def import_course(book_name, filename):
     pgn = open(filename, encoding="utf-8")
 
@@ -94,11 +101,19 @@ def import_course(book_name, filename):
         while subgame and subgame.headers["White"] == chapter_name:
             subgames.append(subgame)
             subgame = chess.pgn.read_game(pgn)
-        data[chapter_name] = subgames
+
+        if len(subgames) > 100:
+            # chunk chapter into subchapter
+            for i, chunk in enumerate(chunks(subgames, 100), start=1):
+                subchapter_name = f"{chapter_name} - Part {i}"
+                data[subchapter_name] = chunk
+        else:
+            data[chapter_name] = subgames
 
         create_chapter(chapter_name, book_id)
 
     for chapter, games in data.items():
+        print(f"Imported {len(games)} from {chapter}")
         import_pgn(games, book_name, chapter)
 
 load_dotenv()
@@ -126,6 +141,9 @@ if not username or not password:
 driver = webdriver.Firefox()
 
 login(username, password)
+print(f"Logged in as {username}")
+print("Beginning import...")
 import_course(course_name, pgn_file)
+print("Successfully imported all chapters")
 
 driver.close()
