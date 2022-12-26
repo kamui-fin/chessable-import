@@ -28,6 +28,7 @@ def login(username, password):
 
 def get_book_id(book_name):
     driver.get(f"https://www.chessable.com/courses/all/created/?search={quote_plus(book_name)}")
+    WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#books")))
     course_link = driver.find_element(By.CSS_SELECTOR, "#books a").get_attribute('href')
     course_id = int([course_link for course_link in course_link.rsplit("/") if course_link][-1])
     return course_id
