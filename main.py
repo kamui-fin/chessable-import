@@ -23,12 +23,12 @@ def login(username, password):
     password_field.send_keys(password)
     form.submit()
 
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 300)
     wait.until(lambda driver: "login" not in driver.current_url)
 
 def get_book_id(book_name):
     driver.get(f"https://www.chessable.com/courses/all/created/?search={quote_plus(book_name)}")
-    WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#books")))
+    WebDriverWait(driver, 300).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#books")))
     course_link = driver.find_element(By.CSS_SELECTOR, "#books a").get_attribute('href')
     course_id = int([course_link for course_link in course_link.rsplit("/") if course_link][-1])
     return course_id
@@ -76,7 +76,8 @@ def import_pgn(games, book_name, chapter):
 
     submit_btn.click()
 
-    WebDriverWait(driver, 30).until(lambda driver: driver.find_element(By.CSS_SELECTOR, "#swal2-title").text.startswith("Import "))
+    WebDriverWait(driver, 300).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#swal2-title")))
+    WebDriverWait(driver, 300).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, "#swal2-title"), "Import Succeed"))
 
 def import_course(book_name, filename, course_color, course_type):
     pgn = open(filename, encoding="utf-8")
