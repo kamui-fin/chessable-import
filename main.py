@@ -46,15 +46,20 @@ def new_book(book_name, type = "Opening", color = "White"):
     piece_type_field.select_by_visible_text(color)
     form.submit()
 
+    WebDriverWait(driver, 300).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".isa_success")))
+
     return get_book_id(book_name)
 
 def create_chapter(name, book_id):
     driver.get(f"https://www.chessable.com/bookadmin.php?bid={book_id}&a=edit&bit=3")
+    current_url = driver.current_url
     form = driver.find_element(By.CSS_SELECTOR, ".section_add_a_level form")
     title_field = form.find_element(By.CSS_SELECTOR, "input[name=title]")
 
     title_field.send_keys(name)
     form.submit()
+
+    WebDriverWait(driver, 300).until(EC.url_changes(current_url))
 
 def import_pgn(games, book_name, chapter):
     driver.get("https://www.chessable.com/import/")
