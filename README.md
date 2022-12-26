@@ -26,8 +26,8 @@ touch .env
 4. Open the newly created `.env` and type out your chessable.com credentials in this format (replacing the `my_username` and `my_password` text)
 
 ```
-USERNAME=my_username
-PASSWORD=my_password
+CHESSABLE_USERNAME=my_username
+CHESSABLE_PASSWORD=my_password
 ```
 
 ## Usage

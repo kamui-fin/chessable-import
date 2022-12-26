@@ -133,7 +133,7 @@ if __name__ == "__main__":
     if not pathlib.Path(pgn_file).exists():
         die("Must specify a valid pgn file path")
 
-    username, password = os.getenv('USERNAME'), os.getenv('PASSWORD')
+    username, password = os.getenv('CHESSABLE_USERNAME'), os.getenv('CHESSABLE_PASSWORD')
     if not username or not password:
         die("Must configure .env file with credentials")
 
