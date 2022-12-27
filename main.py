@@ -77,8 +77,10 @@ def import_pgn(games, book_name, chapter):
     pgn_field.send_keys(Keys.CONTROL, 'v')
 
     course_field.select_by_visible_text(book_name)
-    chapter_field.select_by_visible_text(chapter)
 
+    WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.XPATH, "//option[text()='Please select a book']")))
+
+    chapter_field.select_by_visible_text(chapter)
     submit_btn.click()
 
     WebDriverWait(driver, 300).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#swal2-title")))

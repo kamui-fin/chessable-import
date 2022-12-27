@@ -11,7 +11,7 @@ def chunks(lst, n):
     return res
 
 def trim_name(name, k = 55, with_chunk = 0):
-    name = name.replace("Chapter ", "")
+    name = ' '.join(name.replace("Chapter ", "").split())
     if len(name) > k and with_chunk > 0:
         return name[:k - with_chunk] + name[-with_chunk:]
     return name[:k]
